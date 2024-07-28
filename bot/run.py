@@ -5,10 +5,13 @@ from aiogram.enums import ParseMode
 from handlers import routers
 from filters import ChatType
 
+from redis.asyncio import Redis
+
 import asyncio
 import logging
 import config
 
+redis = Redis(host="localhost", port=6379)
 
 bot = Bot(
     token=config.BOT_TOKEN,
@@ -17,7 +20,7 @@ bot = Bot(
         link_preview_is_disabled=False,
     ),
 )
-dp = Dispatcher()
+dp = Dispatcher(r=redis)
 
 
 async def on_startup(bot: Bot):
@@ -25,6 +28,7 @@ async def on_startup(bot: Bot):
 
 
 async def on_shutdown(bot: Bot):
+    await redis.aclose()
     logging.info("Bot has finished the job!")
 
 
