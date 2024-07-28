@@ -266,7 +266,7 @@ async def publish_post(callback: types.CallbackQuery, r: Redis):
 
     await callback.message.answer("⬆️ ОПУБЛИКОВАН")
     await callback.message.bot.send_message(
-        chat_id=config.СHANEL_USERNMAE,
+        chat_id=config.CHANEL_USERNAME,
         text=format_post(post),
     )
     await callback.message.bot.send_message(
