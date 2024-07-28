@@ -210,7 +210,7 @@ async def process_comment(
         reply_markup=inline_keyboard(
             buttons=[
                 inline_button(text="Опубликовать ✅", callback_data="correct"),
-                inline_button(text="Изменить 🔄", callback_data="incorrect"),
+                inline_button(text="Изменить 🔄", callback_data="sell_asic"),
             ]
         ),
     )
@@ -255,7 +255,6 @@ async def send_post_to_admin(
             ]
         ),
     )
-    await state.set_state(UserState.publish_post)
     await callback.answer()
 
 

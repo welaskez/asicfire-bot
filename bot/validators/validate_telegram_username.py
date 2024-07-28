@@ -13,4 +13,10 @@ def valid_telegram_username_filter(message: types.Message) -> dict[str, str] | N
     except ValueError:
         return None
 
-    return {"telegram_username": telegram_username}
+    return {
+        "telegram_username": (
+            "@" + telegram_username
+            if telegram_username[0] != "@"
+            else telegram_username
+        )
+    }
