@@ -13,9 +13,12 @@ from validators import (
 
 from keyboards.inline import inline_keyboard, inline_button
 
-from utils.messages import post_template, end
+from utils.messages import end
+from utils.helpers import format_post, decode_redis_hash
 
 from states import UserState
+
+from redis.asyncio import Redis
 
 import config
 
@@ -203,20 +206,7 @@ async def process_comment(
     await state.update_data(telegram_id=message.from_user.id)
     post = await state.get_data()
     await message.answer(
-        text="Ваш пост:\n"
-        + post_template.format(
-            post.get("name"),
-            post.get("product"),
-            post.get("products_count"),
-            post.get("condition"),
-            post.get("price"),
-            "$" if post.get("currency") == "РУБ" else "₽",
-            post.get("city"),
-            post.get("is_delivery_company"),
-            post.get("comment"),
-            post.get("phone_number"),
-            post.get("telegram_username"),
-        ),
+        text="Ваш пост:\n" + format_post(post=post),
         reply_markup=inline_keyboard(
             buttons=[
                 inline_button(text="Опубликовать ✅", callback_data="correct"),
@@ -232,8 +222,14 @@ async def process_invalid_comment_length(message: types.Message):
 
 
 @router.callback_query(F.data == "correct")
-async def send_post_to_admin(callback: types.CallbackQuery, state: FSMContext):
+async def send_post_to_admin(
+    callback: types.CallbackQuery,
+    state: FSMContext,
+    r: Redis,
+):
     post = await state.get_data()
+
+    await r.hmset(name=f"user:{callback.from_user.id}", mapping=post)
 
     await callback.message.answer(
         text=end,
@@ -245,59 +241,40 @@ async def send_post_to_admin(callback: types.CallbackQuery, state: FSMContext):
 
     await callback.message.bot.send_message(
         chat_id=config.ADMINS[0],
-        text="Новый пост!\n"
-        + post_template.format(
-            post.get("name"),
-            post.get("product"),
-            post.get("products_count"),
-            post.get("condition"),
-            post.get("price"),
-            "$" if post.get("currency") == "РУБ" else "₽",
-            post.get("city"),
-            post.get("is_delivery_company"),
-            post.get("comment"),
-            post.get("phone_number"),
-            post.get("telegram_username"),
-        ),
+        text="Новый пост!\n" + format_post(post=post),
         reply_markup=inline_keyboard(
             buttons=[
-                inline_button(text="Опубликовать", callback_data="publish_post"),
                 inline_button(
-                    text="Не опубликовывать", callback_data="dont_publish_post"
+                    text="Опубликовать",
+                    callback_data=f"publish_post:{callback.from_user.id}",
+                ),
+                inline_button(
+                    text="Не опубликовывать",
+                    callback_data=f"dont_publish_post:{callback.from_user.id}",
                 ),
             ]
         ),
     )
+    await state.set_state(UserState.publish_post)
     await callback.answer()
 
 
-@router.callback_query(F.data == "publish_post")
-async def publish_post(callback: types.CallbackQuery, state: FSMContext):
-    post = await state.get_data()
-    await state.clear()
+@router.callback_query(F.data.startswith("publish_post:"))
+async def publish_post(callback: types.CallbackQuery, r: Redis):
+    user_id = int(callback.data.split(":")[1])
+    post = decode_redis_hash(await r.hgetall(f"user:{user_id}"))
 
     await callback.message.answer("⬆️ ОПУБЛИКОВАН")
     await callback.message.bot.send_message(
-        chat_id="@asicfire",
-        text=post_template.format(
-            post.get("name"),
-            post.get("product"),
-            post.get("products_count"),
-            post.get("condition"),
-            post.get("price"),
-            "$" if post.get("currency") == "РУБ" else "₽",
-            post.get("city"),
-            post.get("is_delivery_company"),
-            post.get("comment"),
-            post.get("phone_number"),
-            post.get("telegram_username"),
-        ),
+        chat_id=config.СHANEL_USERNMAE,
+        text=format_post(post),
     )
     await callback.message.bot.send_message(
         chat_id=int(post.get("telegram_id")),
         text="✅ Ваше объявление опубликовано",
     )
     await callback.answer()
+    await r.delete(f"user:{user_id}")
 
 
 @router.callback_query(F.data == "next")
@@ -317,10 +294,10 @@ async def next_cmd(callback: types.CallbackQuery):
     )
 
 
-@router.callback_query(F.data == "dont_publish_post")
-async def dont_publish_post(callback: types.CallbackQuery, state: FSMContext):
-    post = await state.get_data()
-    await state.clear()
+@router.callback_query(F.data.startswith("dont_publish_post:"))
+async def dont_publish_post(callback: types.CallbackQuery, r: Redis):
+    user_id = int(callback.data.split(":")[1])
+    post = await r.hgetall(f"user:{user_id}")
 
     await callback.message.answer("⬆️ НЕ ОПУБЛИКОВАН")
     await callback.message.bot.send_message(
@@ -328,6 +305,7 @@ async def dont_publish_post(callback: types.CallbackQuery, state: FSMContext):
         text="🚫 Ваш пост не прошел проверку\n\nСвяжитесь с @asicfire_admin",
     )
     await callback.answer()
+    await r.delete(f"user:{user_id}")
 
 
 async def incorrect_data(callback: types.CallbackQuery, state: FSMContext):
