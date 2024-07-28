@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "asicfire-bot"
+version = "0.1.0"
+description = ""
+authors = ["welaskez <nazar.nikitenko.03@mail.ru>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+aiogram = "^3.10.0"
+pydantic = "^2.8.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
