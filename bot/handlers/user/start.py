@@ -20,10 +20,7 @@ async def newsletter_cmd(message: types.Message, session: AsyncSession):
     if user:
         pass
     if not user:
-        await create_user(
-            session=session,
-            tg_id=message.from_user.id,
-        )
+        await create_user(session=session, tg_id=message.from_user.id)
     await message.answer_photo(
         photo=types.FSInputFile(f"{BASE_DIR}/imgs/img.jpg"),
         caption=start,
