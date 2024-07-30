@@ -17,7 +17,9 @@ class User(Base):
     wallet_address: Mapped[str] = mapped_column(unique=True)
     daily_post_count: Mapped[int] = mapped_column(default=1)
     is_subscribed: Mapped[bool] = mapped_column(default=False)
-    post_limits_expiration_time: Mapped[datetime | None] = mapped_column(DateTime)
+    post_limits_expiration_time: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True)
+    )
     subscription_expiration_time: Mapped[datetime | None] = mapped_column(DateTime)
 
     posts: Mapped[list["Post"]] = relationship("Post", back_populates="user")
