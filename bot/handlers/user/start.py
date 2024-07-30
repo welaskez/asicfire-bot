@@ -23,7 +23,7 @@ async def newsletter_cmd(message: types.Message, session: AsyncSession):
         await create_user(
             session=session,
             tg_id=message.from_user.id,
-            wallet_address=message.from_user.id,
+            wallet_address=str(message.from_user.id),
         )
     await message.answer_photo(
         photo=types.FSInputFile(f"{BASE_DIR}/imgs/img.jpg"),
