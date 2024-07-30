@@ -1,10 +1,15 @@
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import DateTime
 from sqlalchemy import BigInteger
+
+from typing import TYPE_CHECKING
 
 from datetime import datetime
 
 from .base import Base
+
+if TYPE_CHECKING:
+    from .post import Post
 
 
 class User(Base):
@@ -14,3 +19,5 @@ class User(Base):
     is_subscribed: Mapped[bool] = mapped_column(default=False)
     post_limits_expiration_time: Mapped[datetime | None] = mapped_column(DateTime)
     subscription_expiration_time: Mapped[datetime | None] = mapped_column(DateTime)
+
+    posts: Mapped[list["Post"]] = relationship("Post", back_populates="user")
