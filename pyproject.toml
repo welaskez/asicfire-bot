@@ -12,7 +12,13 @@ aiogram = "^3.10.0"
 pydantic = "^2.8.2"
 python-dotenv = "^1.0.1"
 redis = "^5.0.7"
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.31"}
+alembic = "^1.13.2"
+asyncpg = "^0.29.0"
 
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.4.2"
 
 [build-system]
 requires = ["poetry-core"]
