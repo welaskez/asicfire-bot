@@ -1,11 +1,15 @@
-from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
+from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
+
+from middlewares import DatabaseMiddleware
+
+from db.engine import session_maker
+
+from redis.asyncio import Redis
 
 from handlers import routers
 from filters import ChatType
-
-from redis.asyncio import Redis
 
 import asyncio
 import logging
@@ -37,6 +41,7 @@ async def main():
     dp.include_routers(*routers)
     dp.startup.register(on_startup)
     dp.shutdown.register(on_shutdown)
+    dp.update.middleware(DatabaseMiddleware(session_pool=session_maker))
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
