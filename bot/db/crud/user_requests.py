@@ -4,8 +4,12 @@ from sqlalchemy import select
 from db.models import User
 
 
-async def create_user(session: AsyncSession, tg_id: int) -> User:
-    user = User(tg_id=tg_id)
+async def create_user(
+    session: AsyncSession,
+    tg_id: int,
+    wallet_address: str = None,
+) -> User:
+    user = User(tg_id=tg_id, wallet_address=wallet_address)
 
     session.add(user)
     await session.commit()
