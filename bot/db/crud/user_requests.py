@@ -7,7 +7,7 @@ from db.models import User
 async def create_user(
     session: AsyncSession,
     tg_id: int,
-    wallet_address: str = None,
+    wallet_address: str,
 ) -> User:
     user = User(tg_id=tg_id, wallet_address=wallet_address)
 
