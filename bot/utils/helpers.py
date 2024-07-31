@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from types import NoneType
 
 from db.models import User
 
