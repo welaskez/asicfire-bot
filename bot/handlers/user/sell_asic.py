@@ -53,6 +53,11 @@ async def sell_asic_cmd(
         time_left = calculate_time_left(user.post_limits_expiration_time)
         await callback.message.answer(
             text=post_limit_message.format(time_left=time_left),
+            reply_markup=inline_keyboard(
+                buttons=[
+                    inline_button(text="Главное меню", callback_data="next"),
+                ]
+            ),
         )
         await callback.answer()
 
