@@ -38,7 +38,11 @@ async def sell_asic_cmd(
     if user.post_limits_expiration_time is None or is_post_limit_expired(
         user.post_limits_expiration_time
     ):
-        new_expiration_time = datetime.now(timezone.utc) + timedelta(hours=12)
+        cooldown = 12
+        if user.id <= 100:
+            cooldown = 6
+
+        new_expiration_time = datetime.now(timezone.utc) + timedelta(hours=cooldown)
         await update_user(
             session=session,
             tg_id=callback.from_user.id,
