@@ -28,7 +28,9 @@ async def update_user(session: AsyncSession, tg_id: int, **kwargs) -> None:
 
 
 async def get_user_by_tg_id(session: AsyncSession, tg_id: int) -> User | None:
-    return await session.scalar(select(User).where(User.tg_id == tg_id))
+    return await session.scalar(
+        select(User).where(User.tg_id == tg_id).with_for_update()
+    )
 
 
 async def get_user(session: AsyncSession) -> list[User]:
