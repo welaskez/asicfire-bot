@@ -4,7 +4,7 @@ from aiogram.enums import ParseMode
 
 from middlewares import DatabaseMiddleware
 
-from db.engine import session_maker, create_db
+from db.engine import session_maker
 
 from redis.asyncio import Redis
 
@@ -28,7 +28,6 @@ dp = Dispatcher(r=redis)
 
 
 async def on_startup(bot: Bot):
-    await create_db()
     logging.info("Bot has started")
 
 
