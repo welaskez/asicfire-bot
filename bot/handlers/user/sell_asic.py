@@ -40,9 +40,13 @@ async def sell_asic_cmd(
     ):
         cooldown = 24
         if user.id <= 100:
-            cooldown = 12
+            await update_user(
+                session=session, tg_id=callback.from_user.id, daily_post_count=2
+            )
 
-        new_expiration_time = datetime.now(timezone.utc) + timedelta(hours=cooldown)
+        new_expiration_time = datetime.now(timezone.utc) + timedelta(
+            hours=cooldown // user.daily_post_count
+        )
         await update_user(
             session=session,
             tg_id=callback.from_user.id,
