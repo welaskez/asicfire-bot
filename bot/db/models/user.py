@@ -20,6 +20,8 @@ class User(Base):
     post_limits_expiration_time: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True)
     )
-    subscription_expiration_time: Mapped[datetime | None] = mapped_column(DateTime)
+    subscription_expiration_time: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True)
+    )
 
     posts: Mapped[list["Post"]] = relationship("Post", back_populates="user")
