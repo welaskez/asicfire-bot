@@ -1,9 +1,22 @@
 from aiogram import types
 
+import re
+
 
 def validate_products_count(products_count: str) -> str:
-    if len(products_count) > 5:
-        raise ValueError("Products count length is too long!!")
+    products_count = products_count.strip()
+
+    if not re.match(r"^\d+$", products_count):
+        raise ValueError("Invalid product count. Please enter a positive whole number.")
+
+    count = int(products_count)
+
+    if count <= 0:
+        raise ValueError("Product count must be a positive number.")
+
+    if count > 99999:
+        raise ValueError("Product count is too high. Maximum allowed is 99999.")
+
     return products_count
 
 
