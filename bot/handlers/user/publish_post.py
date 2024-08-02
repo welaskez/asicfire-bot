@@ -20,6 +20,13 @@ async def publish_post(callback: types.CallbackQuery, r: Redis, session: AsyncSe
     user = await get_user_by_tg_id(session=session, tg_id=user_id)
 
     post = decode_redis_hash(await r.hgetall(f"user:{user_id}"))
+
+    await callback.message.edit_reply_markup(reply_markup=None)
+    await callback.message.answer(text="⬆️ ОПУБЛИКОВАН")
+    message = await callback.message.bot.send_message(
+        chat_id=config.CHANEL_USERNAME,
+        text=format_post(post),
+    )
     await create_post(
         session=session,
         user_id=user.id,
@@ -34,13 +41,9 @@ async def publish_post(callback: types.CallbackQuery, r: Redis, session: AsyncSe
         comment=post.get("comment"),
         phone_number=post.get("phone_number"),
         telegram_username=post.get("telegram_username"),
+        message_id=message.message_id,
     )
 
-    await callback.message.answer("⬆️ ОПУБЛИКОВАН")
-    await callback.message.bot.send_message(
-        chat_id=config.CHANEL_USERNAME,
-        text=format_post(post),
-    )
     await callback.message.bot.send_message(
         chat_id=int(post.get("telegram_id")),
         text="✅ Ваше объявление опубликовано",
