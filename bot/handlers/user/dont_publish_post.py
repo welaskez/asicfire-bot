@@ -12,6 +12,7 @@ async def dont_publish_post(callback: types.CallbackQuery, r: Redis):
     user_id = int(callback.data.split(":")[1])
     post = decode_redis_hash(await r.hgetall(f"user:{user_id}"))
 
+    await callback.message.edit_reply_markup(reply_markup=None)
     await callback.message.answer("⬆️ НЕ ОПУБЛИКОВАН")
     await callback.message.bot.send_message(
         chat_id=int(post.get("telegram_id")),
