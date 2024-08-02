@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, ForeignKey
+from sqlalchemy import BigInteger, String, ForeignKey
+from sqlalchemy import text
 
 from typing import TYPE_CHECKING
 
@@ -21,6 +22,7 @@ class Post(Base):
     comment: Mapped[str] = mapped_column(String(140))
     phone_number: Mapped[str] = mapped_column(String(16))
     telegram_username: Mapped[str] = mapped_column(String(32))
+    message_id: Mapped[int] = mapped_column(BigInteger, unique=True, nullable=True)
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship("User", back_populates="posts")
