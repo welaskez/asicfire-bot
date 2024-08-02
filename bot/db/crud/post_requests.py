@@ -17,6 +17,7 @@ async def create_post(
     comment: str,
     phone_number: str,
     telegram_username: str,
+    message_id: int,
 ) -> Post:
     post = Post(
         user_id=user_id,
@@ -31,6 +32,7 @@ async def create_post(
         comment=comment,
         phone_number=phone_number,
         telegram_username=telegram_username,
+        message_id=message_id,
     )
 
     session.add(post)
