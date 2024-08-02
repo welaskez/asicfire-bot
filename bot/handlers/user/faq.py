@@ -18,3 +18,4 @@ async def faq(callback: types.CallbackQuery):
             ]
         ),
     )
+    await callback.answer()

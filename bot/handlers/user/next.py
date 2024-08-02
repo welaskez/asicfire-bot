@@ -14,14 +14,13 @@ router = Router()
 @router.callback_query(F.data == "next")
 async def next_cmd(callback: types.CallbackQuery, session: AsyncSession):
     user = await get_user_by_tg_id(session=session, tg_id=callback.from_user.id)
-    if user:
-        pass
     if not user:
         await create_user(
             session=session,
             tg_id=callback.from_user.id,
-            wallet_address=callback.from_user.id,
+            wallet_address=str(callback.from_user.id),
         )
+
     await callback.message.answer_photo(
         photo=types.FSInputFile(f"{config.BASE_DIR}/imgs/img.jpg"),
         caption="📲 Если вам требуется срочно продать устройство - заполните объявление, и мы "
@@ -35,3 +34,4 @@ async def next_cmd(callback: types.CallbackQuery, session: AsyncSession):
             ]
         ),
     )
+    await callback.answer()

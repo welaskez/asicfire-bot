@@ -27,6 +27,7 @@ async def publish_post(callback: types.CallbackQuery, r: Redis, session: AsyncSe
         chat_id=config.CHANEL_USERNAME,
         text=format_post(post),
     )
+
     await create_post(
         session=session,
         user_id=user.id,
