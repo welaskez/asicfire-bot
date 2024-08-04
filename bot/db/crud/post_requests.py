@@ -40,3 +40,7 @@ async def create_post(
     await session.refresh(post)
 
     return Post
+
+
+async def get_post_by_id(session: AsyncSession, user_id: int) -> Post | None:
+    return await session.get(Post, user_id)
