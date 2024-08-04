@@ -78,11 +78,7 @@ async def process_name(message: types.Message, state: FSMContext):
 
 
 @router.message(UserState.product, F.text, valid_product_filter)
-async def process_product(
-    message: types.Message,
-    state: FSMContext,
-    product: str,
-):
+async def process_product(message: types.Message, state: FSMContext, product: str):
     await state.update_data(product=product)
     await state.set_state(UserState.products_count)
     await message.answer(text=sell_asic_msgs.get("products_count"))
@@ -128,11 +124,7 @@ async def process_condition(callback: types.CallbackQuery, state: FSMContext):
 
 
 @router.message(UserState.price, F.text, valid_price_filter)
-async def process_price(
-    message: types.Message,
-    state: FSMContext,
-    price: str,
-):
+async def process_price(message: types.Message, state: FSMContext, price: str):
     await state.update_data(price=price)
     await state.set_state(UserState.currency)
     await message.answer(
@@ -221,11 +213,7 @@ async def process_invalid_telegram_username(message: types.Message):
 
 
 @router.message(UserState.comment, F.text, valid_comment_filter)
-async def process_comment(
-    message: types.Message,
-    state: FSMContext,
-    comment: str,
-):
+async def process_comment(message: types.Message, state: FSMContext, comment: str):
     await state.update_data(comment=comment, telegram_id=message.from_user.id)
     post = await state.get_data()
 
